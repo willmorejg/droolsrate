@@ -1,0 +1,3 @@
+rootProject.name = 'droolsrate'
+include ':insurance-xml'
+project(':insurance-xml').projectDir = new File('../insurance-xml')
