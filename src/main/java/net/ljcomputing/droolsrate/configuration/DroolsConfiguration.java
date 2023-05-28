@@ -20,52 +20,91 @@ James G Willmore - LJ Computing - (C) 2023
 */
 package net.ljcomputing.droolsrate.configuration;
 
-import java.util.Arrays;
-import org.drools.io.InputStreamResource;
+import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
+import net.ljcomputing.droolsrate.listener.DebugAgendaEventListenerImpl;
+import net.ljcomputing.droolsrate.listener.RuleRuntimeEventListenerImpl;
+import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.KieModule;
+import org.kie.api.builder.KieRepository;
+import org.kie.api.builder.ReleaseId;
 import org.kie.api.runtime.KieContainer;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.kie.api.runtime.KieSession;
+import org.kie.internal.io.ResourceFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
-/** Drools Configuration. */
 @Configuration
+@Slf4j
 public class DroolsConfiguration {
-    /** Kie Services. */
-    private static final KieServices kieServices = KieServices.Factory.get();
+    /** Classpath location of Drools (.drl) files. */
+    @Value("${application.drlFilesLocation}")
+    private String drlFilesLocation;
 
-    /** Drools rules (.drl) directory. */
-    @Autowired private Resource[] rulesDirectory;
+    /** Classpath of drl files. */
+    @Value("${application.drlClasspath}")
+    private String drlClasspath;
 
-    /**
-     * {@link org.kie.api.runtime.KieContainer KieContainer} bean.
-     *
-     * @return {@link org.kie.api.runtime.KieContainer KieContainer}
-     */
     @Bean
-    public KieContainer kieContainer() {
-        System.out.println("OK");
-        System.out.println("rulesDirectory: " + Arrays.toString(rulesDirectory));
-        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
+    public KieFileSystem kieFileSystem() throws IOException {
+        final KieFileSystem kieFileSystem = getKieServices().newKieFileSystem();
 
-        for (Resource resource : rulesDirectory) {
-            System.out.println("  -->> adding " + resource.toString());
-            try {
-                kieFileSystem.write(
-                        resource.getFilename(), new InputStreamResource(resource.getInputStream()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        for (final Resource file : getRuleFiles()) {
+            log.info("  adding Drools file -> {}", file);
+            kieFileSystem.write(
+                    ResourceFactory.newClassPathResource(
+                            drlClasspath + file.getFilename(), "UTF-8"));
         }
 
-        KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
-        kieBuilder.buildAll();
-        KieModule kieModule = kieBuilder.getKieModule();
+        return kieFileSystem;
+    }
 
-        return kieServices.newKieContainer(kieModule.getReleaseId());
+    private Resource[] getRuleFiles() throws IOException {
+        final ResourcePatternResolver resourcePatternResolver =
+                new PathMatchingResourcePatternResolver();
+        return resourcePatternResolver.getResources(drlFilesLocation);
+    }
+
+    @Bean
+    public KieContainer kieContainer() throws IOException {
+        final KieRepository kieRepository = getKieServices().getRepository();
+
+        kieRepository.addKieModule(
+                new KieModule() {
+                    public ReleaseId getReleaseId() {
+                        return kieRepository.getDefaultReleaseId();
+                    }
+                });
+
+        final KieBuilder kieBuilder = getKieServices().newKieBuilder(kieFileSystem());
+        kieBuilder.buildAll();
+
+        return getKieServices().newKieContainer(kieRepository.getDefaultReleaseId());
+    }
+
+    @Bean
+    public KieSession kieSession() throws IOException {
+        KieSession kieSession = kieContainer().newKieSession();
+
+        kieSession.addEventListener(new DebugAgendaEventListenerImpl());
+        kieSession.addEventListener(new RuleRuntimeEventListenerImpl());
+
+        return kieSession;
+    }
+
+    @Bean
+    public KieBase kieBase() throws IOException {
+        return kieContainer().getKieBase();
+    }
+
+    private KieServices getKieServices() {
+        return KieServices.Factory.get();
     }
 }

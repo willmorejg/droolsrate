@@ -39,8 +39,11 @@ dependencies {
 
 	implementation 'org.drools:drools-core:8.38.0.Final'
 	implementation 'org.drools:drools-compiler:8.38.0.Final'
+	implementation 'org.drools:drools-engine:8.38.0.Final'
   implementation 'org.drools:drools-mvel:8.38.0.Final'
 	implementation 'org.drools:drools-decisiontables:8.38.0.Final'
+
+	implementation 'org.kie:kie-ci:8.38.0.Final'
 
 	implementation project(":insurance-xml")
 

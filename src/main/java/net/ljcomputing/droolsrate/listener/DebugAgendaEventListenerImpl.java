@@ -18,22 +18,22 @@ under the License.
 
 James G Willmore - LJ Computing - (C) 2023
 */
-package net.ljcomputing.droolsrate;
+package net.ljcomputing.droolsrate.listener;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.extern.slf4j.Slf4j;
+import org.drools.core.event.DebugAgendaEventListener;
+import org.kie.api.event.rule.AfterMatchFiredEvent;
+import org.kie.api.event.rule.BeforeMatchFiredEvent;
 
-/** Drools Rate Application. */
-@SpringBootApplication(
-        scanBasePackages = {"net.ljcomputing.droolsrate", "net.ljcomputing.insurancexml"})
-public class DroolsrateApplication {
+@Slf4j
+public class DebugAgendaEventListenerImpl extends DebugAgendaEventListener {
+    @Override
+    public void afterMatchFired(AfterMatchFiredEvent event) {
+        log.debug("after: {}", event.toString());
+    }
 
-    /**
-     * Main method.
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(DroolsrateApplication.class, args);
+    @Override
+    public void beforeMatchFired(BeforeMatchFiredEvent event) {
+        log.debug("before: {}", event.toString());
     }
 }

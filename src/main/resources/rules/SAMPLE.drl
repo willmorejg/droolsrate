@@ -1,0 +1,26 @@
+package rules
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import net.ljcomputing.insurancexml.domain.Policy;
+
+global net.ljcomputing.droolsrate.model.RuleResults results;
+
+dialect "java"
+
+rule "Applicant age less than 18"
+    when
+        $policy: Policy(LocalDate.from(insured.birthdate).until(LocalDate.now(), ChronoUnit.YEARS) < 18);
+    then
+        results.addResult("Applicant age less than 18", true);
+        System.out.println("ok");
+end
+
+rule "Policy Coverages greater than two"
+    when
+        $policy: Policy(coverages.size > 2);
+    then
+        System.out.println("cnt: " + $policy.getCoverages().size());
+        results.addResult("Policy Coverages greater than two", true);
+        System.out.println("ok");
+end

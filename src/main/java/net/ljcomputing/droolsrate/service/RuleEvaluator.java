@@ -18,22 +18,17 @@ under the License.
 
 James G Willmore - LJ Computing - (C) 2023
 */
-package net.ljcomputing.droolsrate;
+package net.ljcomputing.droolsrate.service;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import net.ljcomputing.droolsrate.model.RuleResults;
 
-/** Drools Rate Application. */
-@SpringBootApplication(
-        scanBasePackages = {"net.ljcomputing.droolsrate", "net.ljcomputing.insurancexml"})
-public class DroolsrateApplication {
-
+/** Drools rule evaluator interface. */
+public interface RuleEvaluator<T> {
     /**
-     * Main method.
+     * Evaluate the give object.
      *
-     * @param args
+     * @param objToEvaluate
+     * @return results of rules evaluation
      */
-    public static void main(String[] args) {
-        SpringApplication.run(DroolsrateApplication.class, args);
-    }
+    RuleResults evaluate(T objToEvaluate);
 }

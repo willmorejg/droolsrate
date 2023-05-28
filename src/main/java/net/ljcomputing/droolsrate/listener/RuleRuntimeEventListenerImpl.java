@@ -18,22 +18,28 @@ under the License.
 
 James G Willmore - LJ Computing - (C) 2023
 */
-package net.ljcomputing.droolsrate;
+package net.ljcomputing.droolsrate.listener;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.extern.slf4j.Slf4j;
+import org.kie.api.event.rule.ObjectDeletedEvent;
+import org.kie.api.event.rule.ObjectInsertedEvent;
+import org.kie.api.event.rule.ObjectUpdatedEvent;
+import org.kie.api.event.rule.RuleRuntimeEventListener;
 
-/** Drools Rate Application. */
-@SpringBootApplication(
-        scanBasePackages = {"net.ljcomputing.droolsrate", "net.ljcomputing.insurancexml"})
-public class DroolsrateApplication {
+@Slf4j
+public class RuleRuntimeEventListenerImpl implements RuleRuntimeEventListener {
+    @Override
+    public void objectInserted(ObjectInsertedEvent event) {
+        log.debug("objectInserted: {}", event);
+    }
 
-    /**
-     * Main method.
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(DroolsrateApplication.class, args);
+    @Override
+    public void objectUpdated(ObjectUpdatedEvent event) {
+        log.debug("objectUpdated: {}", event);
+    }
+
+    @Override
+    public void objectDeleted(ObjectDeletedEvent event) {
+        log.debug("objectDeleted: {}", event);
     }
 }

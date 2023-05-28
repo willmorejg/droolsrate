@@ -18,17 +18,15 @@ under the License.
 
 James G Willmore - LJ Computing - (C) 2023
 */
-package net.ljcomputing.droolsrate.service;
+package net.ljcomputing.droolsrate.util;
 
-import org.kie.api.io.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/** Drool rule {@link org.kie.api.io.Resource Resource} loader. */
-public interface RuleLoader {
-    /**
-     * Load a rule file as a {@link org.kie.api.io.Resource Resource}.
-     *
-     * @param ruleFile
-     * @return {@link org.kie.api.io.Resource Resource}
-     */
-    Resource loadRule(String ruleFile);
+public class LoggingUtil {
+    private static final Logger log = LoggerFactory.getLogger(LoggingUtil.class);
+
+    public void logDebug(String message) {
+        log.debug(message);
+    }
 }

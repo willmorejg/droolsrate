@@ -18,22 +18,28 @@ under the License.
 
 James G Willmore - LJ Computing - (C) 2023
 */
-package net.ljcomputing.droolsrate;
+package net.ljcomputing.droolsrate.service.impl;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import net.ljcomputing.droolsrate.model.RuleResults;
+import net.ljcomputing.droolsrate.service.RuleEvaluator;
+import net.ljcomputing.insurancexml.domain.Policy;
+import org.kie.api.runtime.KieSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/** Drools Rate Application. */
-@SpringBootApplication(
-        scanBasePackages = {"net.ljcomputing.droolsrate", "net.ljcomputing.insurancexml"})
-public class DroolsrateApplication {
+@Service
+public class PolicyRuleEvaluator implements RuleEvaluator<Policy> {
+    @Autowired private KieSession kieSession;
 
-    /**
-     * Main method.
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(DroolsrateApplication.class, args);
+    @Override
+    public RuleResults evaluate(Policy policy) {
+        RuleResults results = new RuleResults();
+
+        kieSession.setGlobal("results", results);
+        kieSession.insert(policy);
+        kieSession.fireAllRules();
+        kieSession.dispose();
+
+        return results;
     }
 }

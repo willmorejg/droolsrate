@@ -18,22 +18,17 @@ under the License.
 
 James G Willmore - LJ Computing - (C) 2023
 */
-package net.ljcomputing.droolsrate;
+package net.ljcomputing.droolsrate.model;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.Data;
 
-/** Drools Rate Application. */
-@SpringBootApplication(
-        scanBasePackages = {"net.ljcomputing.droolsrate", "net.ljcomputing.insurancexml"})
-public class DroolsrateApplication {
+@Data
+public class RuleResults {
+    private Map<String, Boolean> results = new HashMap<>();
 
-    /**
-     * Main method.
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(DroolsrateApplication.class, args);
+    public void addResult(final String key, final boolean value) {
+        results.put(key, value);
     }
 }

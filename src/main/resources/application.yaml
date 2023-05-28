@@ -1,6 +1,8 @@
 application:
   #location relative to classpath
-  drlFilesLocation: classpath*:WEB-INF/classes/rules/*.drl
+  drlFilesLocation: classpath*:rules/*.drl
+  #classpath path
+  drlClasspath: rules/
 server:
   port: 9980
 management:
