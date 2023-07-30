@@ -21,6 +21,7 @@ James G Willmore - LJ Computing - (C) 2023
 package net.ljcomputing.droolsrate.configuration;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,7 +37,7 @@ public class DirectoryConfiguration {
     @Bean
     public Path outputDirectory() {
         String homeDir = System.getProperty("user.home");
-        Path outPath = Path.of(homeDir, "out");
+        Path outPath = Paths.get(homeDir, "out");
         return outPath;
     }
 }
